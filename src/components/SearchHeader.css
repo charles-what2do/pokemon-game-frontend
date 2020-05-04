@@ -1,0 +1,16 @@
+input {
+  height: 24px;
+  border: 1px solid gray;
+  border-radius: 6px 0 0 6px;
+  padding: 0 4px;
+  margin: 0;
+  border-right: 0;
+}
+
+button {
+  height: 26px;
+  border: 1px solid gray;
+  border-radius: 0 6px 6px 0;
+  padding: 2px;
+  margin: 0;
+}

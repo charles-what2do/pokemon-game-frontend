@@ -1,0 +1,90 @@
+.pokemon-card {
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  width: 240px;
+  border: 1px solid black;
+  margin: 16px;
+  border-radius: 10px;
+  padding: 8px;
+  text-align: center;
+  background-color: white;
+}
+
+.pokemon-img-block {
+  display: flex;
+  border: 1px solid black;
+  padding: 8px;
+  width: 200px;
+  height: 200px;
+  margin-left: auto;
+  margin-right: auto;
+  align-items: center;
+}
+
+.pokemon-img {
+  max-width: 200px;
+  max-height: 200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.pokemon-name {
+  font-weight: bold;
+  font-size: x-large;
+}
+
+.pokemon-types {
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+  margin-top: 8px;
+}
+
+.pokemon-base {
+  display: grid;
+  grid-template-areas:
+    "hp speed"
+    "attack spattack"
+    "defence spdefence";
+  grid-gap: 2px;
+  padding: 4px;
+}
+
+.base-attribute {
+  margin: 0px, 20px;
+  border: 1px solid black;
+  border-radius: 4px;
+  margin: 4px;
+  padding: 4px;
+  text-align: left;
+  background-color: white;
+}
+
+.pokemon-card-game .base-attribute:hover {
+  background-color: yellow;
+}
+
+.base-hp {
+  grid-area: hp;
+}
+
+.base-attack {
+  grid-area: attack;
+}
+
+.base-defence {
+  grid-area: defence;
+}
+
+.base-spattack {
+  grid-area: spattack;
+}
+
+.base-spdefence {
+  grid-area: spdefence;
+}
+
+.base-speed {
+  grid-area: speed;
+}

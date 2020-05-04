@@ -1,0 +1,33 @@
+.header {
+  background-color: blue;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 16px 0 16px;
+  /* top right bottom left, clockwise direction from the top */
+  align-items: center;
+}
+
+.header-image {
+  height: 100px;
+}
+
+.header-nav a {
+  font-size: x-large;
+  color: white;
+  text-decoration: none;
+  padding: 10px;
+}
+
+.header-nav a:hover {
+  color: cyan;
+}
+
+.header-nav a.active {
+  color: orange;
+  text-decoration: underline;
+}
+
+body {
+  margin: 0;
+}
