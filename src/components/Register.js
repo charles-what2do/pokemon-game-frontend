@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import axios from "axios";
-// import { setUserSession } from "./Utils/Common";
 const baseURL = "http://localhost:3001/user";
 
 function Register(props) {
@@ -43,7 +42,6 @@ function Register(props) {
   return (
     <div>
       <h1>Register</h1>
-      <br />
       <br />
       <div>
         Username

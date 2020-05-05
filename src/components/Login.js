@@ -22,7 +22,7 @@ function Login(props) {
     })
       .then((response) => {
         setLoading(false);
-        props.history.push("/game");
+        props.history.push("/start");
       })
       .catch((error) => {
         setLoading(false);
@@ -46,7 +46,6 @@ function Login(props) {
   return (
     <div>
       <h1>Login</h1>
-      <br />
       <br />
       <div>
         Username

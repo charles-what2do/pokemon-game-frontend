@@ -5,6 +5,7 @@ import PokemonCardGame from "./PokemonCardGame";
 import About from "./About";
 import Register from "./Register";
 import Login from "./Login";
+import Start from "./Start";
 import { BrowserRouter, NavLink, Switch, Route } from "react-router-dom";
 
 const Header = () => {
@@ -33,6 +34,7 @@ const Header = () => {
           <Route exact path="/" component={SearchablePokemonGallery} />
           <Route exact path="/register" component={Register} />
           <Route exact path="/login" component={Login} />
+          <Route exact path="/start" component={Start} />
           <Route exact path="/game" component={PokemonCardGame} />
           <Route exact path="/about" component={About} />
         </Switch>

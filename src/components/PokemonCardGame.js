@@ -14,7 +14,8 @@ class PokemonCardGame extends React.Component {
     this.state = {
       isLoading: true,
       playerName: "",
-      gameCards: {},
+      player1Cards: [],
+      player2Cards: [],
     };
   }
 
@@ -49,9 +50,11 @@ class PokemonCardGame extends React.Component {
 
     axios(pokemonURL + "/app/pokemonData")
       .then((res) => {
+        const dealedCards = dealCards(res.data);
         this.setState({
           isLoading: false,
-          gameCards: dealCards(res.data),
+          player1Cards: dealedCards.player1,
+          player2Cards: dealedCards.player2,
         });
       })
       .catch((error) => {
@@ -61,7 +64,45 @@ class PokemonCardGame extends React.Component {
   }
 
   handleBaseClick = (attribute, value) => {
-    console.log(attribute, value);
+    if (!this.state.isLoading) {
+      const [player1firstCard, ...player1Reamining] = this.state.player1Cards;
+      const [player2firstCard, ...player2Reamining] = this.state.player2Cards;
+      console.log(player1firstCard);
+      console.log(player1Reamining);
+      console.log(player2firstCard);
+      console.log(player2Reamining);
+      if (value > this.state.player1Cards[0].base[attribute]) {
+        alert("You win");
+        if (player1Reamining.length === 0) {
+          alert("You won the game");
+        } else {
+          this.setState({
+            isLoading: false,
+            player2Cards: [
+              ...player2Reamining,
+              player1firstCard,
+              player2firstCard,
+            ],
+            player1Cards: [...player1Reamining],
+          });
+        }
+      } else {
+        alert("You lose");
+        if (player1Reamining.length === 0) {
+          alert("You lost the game");
+        } else {
+          this.setState({
+            isLoading: false,
+            player2Cards: [...player2Reamining],
+            player1Cards: [
+              ...player1Reamining,
+              player2firstCard,
+              player1firstCard,
+            ],
+          });
+        }
+      }
+    }
   };
 
   loadGame() {
@@ -69,33 +110,21 @@ class PokemonCardGame extends React.Component {
       <div data-testid="pokemon-card-game" className="pokemon-card-game">
         <div className="player player1">
           <h1>Computer</h1>
-          <div className="pokemon-cards">
-            <PokemonCard
-              key={this.state.gameCards.player1[0].id}
-              pokemon={this.state.gameCards.player1[0]}
-              onBaseClick={this.handleBaseClick}
-            />
-            {/* {this.state.gameCards.player1[0].map((pokemon) => (
-              <PokemonCard
-                key={pokemon.id}
-                pokemon={pokemon}
-                onBaseClick={this.handleBaseClick}
-              />
-            ))} */}
-          </div>
+          <PokemonCard
+            key={this.state.player1Cards[0].id}
+            pokemon={this.state.player1Cards[0]}
+            onBaseClick={this.handleBaseClick}
+          />
+          <h3>Cards on hand: {this.state.player1Cards.length}</h3>
         </div>
         <div className="player player2">
           <h1>{this.state.playerName}</h1>
-          <div className="pokemon-cards">
-            <PokemonCard
-              key={this.state.gameCards.player2[0].id}
-              pokemon={this.state.gameCards.player2[0]}
-              onBaseClick={this.handleBaseClick}
-            />
-            {/* {this.state.gameCards.player2[0].map((pokemon) => (
-              <PokemonCard key={pokemon.id} pokemon={pokemon} />
-            ))} */}
-          </div>
+          <PokemonCard
+            key={this.state.player2Cards[0].id}
+            pokemon={this.state.player2Cards[0]}
+            onBaseClick={this.handleBaseClick}
+          />
+          <h3>Cards on hand: {this.state.player2Cards.length}</h3>
         </div>
       </div>
     );
