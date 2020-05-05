@@ -3,29 +3,26 @@ import axios from "axios";
 import "./Start.css";
 const baseURL = "http://localhost:3001/user";
 
-function Start(props) {
-  const [username, setUsername] = useState("");
+function Records(props) {
+  const [records, setRecords] = useState([]);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (username === "") {
+    if (records.length === 0) {
       axios({
         method: "get",
-        url: baseURL + "/",
+        url: baseURL + "/records",
         withCredentials: true,
       })
         .then((res) => {
-          setUsername(res.data.username);
+          console.log(res.data);
+          setRecords(res.data);
         })
         .catch((error) => {
-          setError(JSON.stringify(error.response.data));
+          setError(error);
         });
     }
   });
-
-  const gotoRecords = () => {
-    props.history.push("./records");
-  };
 
   const gotoGame = () => {
     props.history.push("./game");
@@ -38,14 +35,11 @@ function Start(props) {
       url: baseURL + "/logout",
     })
       .then((response) => {
-        console.log(response);
-        setUsername("");
         props.history.push("/login");
       })
       .catch((error) => {
         if (!!error.response) {
           if (error.response.status === 400) {
-            console.log(error.response.data);
             setError(JSON.stringify(error.response.data));
           } else {
             setError("Something went wrong. Please try again later.");
@@ -58,13 +52,15 @@ function Start(props) {
 
   return (
     <div className="start-menu">
-      <h1>Welcome {username}</h1>
+      <h1>Your Records</h1>
       <br />
+      {records.map((record) => (
+        <h2 key={record.id}>
+          {record.recordType} {record.recordTime}ms
+        </h2>
+      ))}
       <button className="start-button" onClick={gotoGame}>
-        <span>Start Game </span>
-      </button>
-      <button className="start-button" onClick={gotoRecords}>
-        <span>View Records </span>
+        <span>Back To Game </span>
       </button>
       <button className="start-button" onClick={handleLogout}>
         <span>Logout </span>
@@ -79,4 +75,4 @@ function Start(props) {
   );
 }
 
-export default Start;
+export default Records;

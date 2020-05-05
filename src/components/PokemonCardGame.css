@@ -1,6 +1,8 @@
 .pokemon-card-game {
   display: grid;
-  grid-template-areas: "player1 player2";
+  grid-template-areas:
+    "message message"
+    "player1 player2";
   grid-gap: 2px;
   padding: 4px;
 }
@@ -16,6 +18,15 @@
 .player h1 {
   margin-top: 16px;
   margin-bottom: 0;
+}
+
+.message {
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+.player h3 {
+  margin-top: 0;
 }
 
 .pokemon-cards {
@@ -34,4 +45,8 @@
 
 .player2 {
   grid-area: player2;
+}
+
+.message {
+  grid-area: message;
 }

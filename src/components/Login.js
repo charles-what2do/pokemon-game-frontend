@@ -19,6 +19,7 @@ function Login(props) {
         username: username.value,
         password: password.value,
       },
+      withCredentials: true,
     })
       .then((response) => {
         setLoading(false);

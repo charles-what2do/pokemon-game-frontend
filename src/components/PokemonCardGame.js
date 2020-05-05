@@ -13,9 +13,12 @@ class PokemonCardGame extends React.Component {
     super(props);
     this.state = {
       isLoading: true,
+      message: "",
       playerName: "",
       player1Cards: [],
       player2Cards: [],
+      startTime: null,
+      record: {},
     };
   }
 
@@ -55,6 +58,8 @@ class PokemonCardGame extends React.Component {
           isLoading: false,
           player1Cards: dealedCards.player1,
           player2Cards: dealedCards.player2,
+          message: this.state.playerName + " starts",
+          startTime: new Date(),
         });
       })
       .catch((error) => {
@@ -67,14 +72,18 @@ class PokemonCardGame extends React.Component {
     if (!this.state.isLoading) {
       const [player1firstCard, ...player1Reamining] = this.state.player1Cards;
       const [player2firstCard, ...player2Reamining] = this.state.player2Cards;
-      console.log(player1firstCard);
-      console.log(player1Reamining);
-      console.log(player2firstCard);
-      console.log(player2Reamining);
       if (value > this.state.player1Cards[0].base[attribute]) {
-        alert("You win");
+        // alert("You win");
+        this.setState({ message: "You win, your turn" });
         if (player1Reamining.length === 0) {
-          alert("You won the game");
+          // alert("You won the game");
+          const endTime = new Date();
+          const record = {
+            recordType: "WIN",
+            recordTime: Math.abs((endTime - this.state.startTime) / 1000),
+          };
+          this.setState({ message: "You won the game", record: record });
+          console.log(record);
         } else {
           this.setState({
             isLoading: false,
@@ -87,9 +96,17 @@ class PokemonCardGame extends React.Component {
           });
         }
       } else {
-        alert("You lose");
-        if (player1Reamining.length === 0) {
-          alert("You lost the game");
+        // alert("You lose");
+        this.setState({ message: "You lose, computer's turn" });
+        if (player2Reamining.length === 0) {
+          // alert("You lost the game");
+          const endTime = new Date();
+          const record = {
+            recordType: "LOSE",
+            recordTime: Math.abs((endTime - this.state.startTime) / 1000),
+          };
+          this.setState({ message: "You lost the game", record: record });
+          console.log(record);
         } else {
           this.setState({
             isLoading: false,
@@ -108,6 +125,7 @@ class PokemonCardGame extends React.Component {
   loadGame() {
     return (
       <div data-testid="pokemon-card-game" className="pokemon-card-game">
+        <h2 className="message">{this.state.message}</h2>
         <div className="player player1">
           <h1>Computer</h1>
           <PokemonCard

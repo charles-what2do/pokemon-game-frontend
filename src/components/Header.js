@@ -6,6 +6,7 @@ import About from "./About";
 import Register from "./Register";
 import Login from "./Login";
 import Start from "./Start";
+import Records from "./Records";
 import { BrowserRouter, NavLink, Switch, Route } from "react-router-dom";
 
 const Header = () => {
@@ -36,6 +37,7 @@ const Header = () => {
           <Route exact path="/login" component={Login} />
           <Route exact path="/start" component={Start} />
           <Route exact path="/game" component={PokemonCardGame} />
+          <Route exact path="/records" component={Records} />
           <Route exact path="/about" component={About} />
         </Switch>
       </BrowserRouter>
