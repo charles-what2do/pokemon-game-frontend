@@ -3,6 +3,8 @@ import "./Header.css";
 import SearchablePokemonGallery from "./SearchablePokemonGallery";
 import PokemonCardGame from "./PokemonCardGame";
 import About from "./About";
+import Register from "./Register";
+import Login from "./Login";
 import { BrowserRouter, NavLink, Switch, Route } from "react-router-dom";
 
 const Header = () => {
@@ -19,7 +21,7 @@ const Header = () => {
             <NavLink exact to="/">
               Pokemon Gallery
             </NavLink>
-            <NavLink exact to="/game">
+            <NavLink exact to="/login">
               Game
             </NavLink>
             <NavLink exact to="/about">
@@ -29,6 +31,8 @@ const Header = () => {
         </div>
         <Switch>
           <Route exact path="/" component={SearchablePokemonGallery} />
+          <Route exact path="/register" component={Register} />
+          <Route exact path="/login" component={Login} />
           <Route exact path="/game" component={PokemonCardGame} />
           <Route exact path="/about" component={About} />
         </Switch>

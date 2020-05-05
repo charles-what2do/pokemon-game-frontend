@@ -1,4 +1,4 @@
-input {
+.search-header input {
   height: 24px;
   border: 1px solid gray;
   border-radius: 6px 0 0 6px;
@@ -7,7 +7,7 @@ input {
   border-right: 0;
 }
 
-button {
+.search-header button {
   height: 26px;
   border: 1px solid gray;
   border-radius: 0 6px 6px 0;

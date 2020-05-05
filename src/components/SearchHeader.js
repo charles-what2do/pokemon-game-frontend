@@ -8,7 +8,7 @@ const SearchHeader = ({
   onhandleKeyDown,
 }) => {
   return (
-    <div>
+    <div className="search-header">
       <input
         aria-label="pokemon-filter"
         type="text"
