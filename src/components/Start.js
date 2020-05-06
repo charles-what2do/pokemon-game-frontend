@@ -8,20 +8,18 @@ function Start(props) {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (username === "") {
-      axios({
-        method: "get",
-        url: baseURL + "/",
-        withCredentials: true,
+    axios({
+      method: "get",
+      url: baseURL + "/",
+      withCredentials: true,
+    })
+      .then((res) => {
+        setUsername(res.data.username);
       })
-        .then((res) => {
-          setUsername(res.data.username);
-        })
-        .catch((error) => {
-          setError(JSON.stringify(error.response.data));
-        });
-    }
-  });
+      .catch((error) => {
+        setError(JSON.stringify(error.response.data));
+      });
+  }, []);
 
   const gotoRecords = () => {
     props.history.push("./records");

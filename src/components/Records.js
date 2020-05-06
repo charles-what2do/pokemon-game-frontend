@@ -54,11 +54,15 @@ function Records(props) {
     <div className="start-menu">
       <h1>Your Records</h1>
       <br />
-      {records.map((record) => (
-        <h2 key={record.id}>
-          {record.recordType} {record.recordTime}ms
-        </h2>
-      ))}
+      {records
+        .sort(function (a, b) {
+          return a.recordTime - b.recordTime;
+        })
+        .map((record) => (
+          <h2 key={record.id}>
+            {record.recordType} {record.recordTime}s
+          </h2>
+        ))}
       <button className="start-button" onClick={gotoGame}>
         <span>Back To Game </span>
       </button>

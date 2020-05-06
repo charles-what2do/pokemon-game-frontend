@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import "./Register.css";
 const baseURL = "http://localhost:3001/user";
 
 function Register(props) {
@@ -40,7 +41,7 @@ function Register(props) {
   };
 
   return (
-    <div>
+    <div className="register">
       <h1>Register</h1>
       <br />
       <div>
