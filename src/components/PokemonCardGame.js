@@ -22,7 +22,7 @@ class PokemonCardGame extends React.Component {
   }
 
   async componentDidMount() {
-    await this.getData();
+    this.getData();
   }
 
   async getData() {
@@ -30,9 +30,9 @@ class PokemonCardGame extends React.Component {
       isLoading: true,
     });
 
-    axios({
+    await axios({
       method: "get",
-      url: process.env.REACT_APP_BACKEND_API + "/",
+      url: process.env.REACT_APP_BACKEND_API + "/user",
       withCredentials: true,
     })
       .then((res) => {
@@ -46,7 +46,7 @@ class PokemonCardGame extends React.Component {
         // this.setState({ isLoading: false }); //, errorMessage: "Please Try Again" });
       });
 
-    axios(process.env.REACT_APP_POKEMON_API + "/app/pokemonData")
+    await axios(process.env.REACT_APP_POKEMON_API + "/app/pokemonData")
       .then((res) => {
         const dealedCards = dealCards(res.data);
         this.setState({
@@ -70,7 +70,7 @@ class PokemonCardGame extends React.Component {
 
     axios({
       method: "post",
-      url: process.env.REACT_APP_BACKEND_API + "/records",
+      url: process.env.REACT_APP_BACKEND_API + "/user/records",
       data: record,
       withCredentials: true,
     })

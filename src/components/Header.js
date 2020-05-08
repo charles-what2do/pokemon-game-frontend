@@ -33,7 +33,6 @@ const Header = () => {
     return (
       <Switch>
         <Route exact path="/" component={SearchablePokemonGallery} />
-        <Route path="/register" component={Register} />
         {isLoggedIn && (
           <Route
             path="/start"
@@ -81,6 +80,7 @@ const Header = () => {
             )}
           />
         )}
+        <Route path="/about" component={About} />
         <Redirect to="/login" />
       </Switch>
     );
@@ -112,21 +112,5 @@ const Header = () => {
     </div>
   );
 };
-
-{
-  /* <Switch>
-<Route exact path="/" component={SearchablePokemonGallery} />
-<Route exact path="/register" component={Register} />
-{/* <Route exact path="/login" component={Login} />
-<Route exact path="/start" component={Start} />
-<Route exact path="/game" component={PokemonCardGame} />
-<Route exact path="/records" component={Records} /> 
-<PublicRoute path="/login" component={Login} />
-<PrivateRoute exact path="/start" component={Start} />
-<PrivateRoute exact path="/game" component={PokemonCardGame} />
-<PrivateRoute exact path="/records" component={Records} />
-<Route exact path="/about" component={About} />
-</Switch> */
-}
 
 export default Header;
