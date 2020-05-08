@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { registeUser } from "../utils/Common";
+import { registerUser } from "../utils/Common";
 import "./Register.css";
 
 function Register(props) {
@@ -73,7 +73,7 @@ function Register(props) {
     setLoading(true);
     if (handleValidation()) {
       const user = { username: username.value, password: password.value };
-      await registeUser(user, registerHandler, errHandler);
+      await registerUser(user, registerHandler, errHandler);
     }
     setLoading(false);
   };

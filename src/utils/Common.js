@@ -3,7 +3,7 @@ import axios from "axios";
 export const hasLoggedIn = async () => {
   await axios({
     method: "get",
-    url: process.env.REACT_APP_BACKEND_API + "/",
+    url: process.env.REACT_APP_BACKEND_API + "/user",
     withCredentials: true,
   })
     .then((res) => {
@@ -18,10 +18,10 @@ export const hasLoggedIn = async () => {
     });
 };
 
-export const registeUser = async (user, successHandler, errorHandler) => {
+export const registerUser = async (user, successHandler, errorHandler) => {
   await axios({
     method: "post",
-    url: process.env.REACT_APP_BACKEND_API + "/register",
+    url: process.env.REACT_APP_BACKEND_API + "/user/register",
     data: {
       username: user.username,
       password: user.password,
@@ -48,9 +48,10 @@ export const registeUser = async (user, successHandler, errorHandler) => {
 };
 
 export const loginUser = async (user, successHandler, errorHandler) => {
+  console.log(process.env.REACT_APP_BACKEND_API);
   await axios({
     method: "post",
-    url: process.env.REACT_APP_BACKEND_API + "/login",
+    url: process.env.REACT_APP_BACKEND_API + "/user/login",
     data: {
       username: user.username,
       password: user.password,
@@ -80,7 +81,7 @@ export const loginUser = async (user, successHandler, errorHandler) => {
 export const logoutUser = async (successHandler, errorHandler) => {
   await axios({
     method: "post",
-    url: process.env.REACT_APP_BACKEND_API + "/logout",
+    url: process.env.REACT_APP_BACKEND_API + "/user/logout",
     withCredentials: true,
   })
     .then((response) => {
@@ -102,7 +103,7 @@ export const logoutUser = async (successHandler, errorHandler) => {
 export const getUsername = async (successHandler, errorHandler) => {
   await axios({
     method: "get",
-    url: process.env.REACT_APP_BACKEND_API + "/",
+    url: process.env.REACT_APP_BACKEND_API + "/user",
     withCredentials: true,
   })
     .then((res) => {
@@ -116,7 +117,7 @@ export const getUsername = async (successHandler, errorHandler) => {
 export const getRecords = async (successHandler, errorHandler) => {
   await axios({
     method: "get",
-    url: process.env.REACT_APP_BACKEND_API + "/records",
+    url: process.env.REACT_APP_BACKEND_API + "/user/records",
     withCredentials: true,
   })
     .then((res) => {
@@ -130,7 +131,7 @@ export const getRecords = async (successHandler, errorHandler) => {
 export const addRecord = async (record, successHandler, errorHandler) => {
   await axios({
     method: "post",
-    url: process.env.REACT_APP_BACKEND_API + "/records",
+    url: process.env.REACT_APP_BACKEND_API + "/user/records",
     data: record,
     withCredentials: true,
   })
