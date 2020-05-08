@@ -4,8 +4,6 @@ import SearchHeader from "./SearchHeader";
 import PokemonGallery from "./PokemonGallery";
 import Loader from "./Loader";
 import "./SearchablePokemonGallery.css";
-// import pokemonData from "../pokemon/pokemon";
-const baseURL = "https://us-central1-pokedex-23fb6.cloudfunctions.net";
 
 class SearchablePokemonGallery extends React.Component {
   constructor(props) {
@@ -39,15 +37,11 @@ class SearchablePokemonGallery extends React.Component {
   }
 
   getData() {
-    // this.setState({
-    //   isLoading: false,
-    //   pokemons: pokemonData,
-    // });
     this.setState({
       isLoading: true,
     });
 
-    axios(baseURL + "/app/pokemonData")
+    axios(process.env.REACT_APP_POKEMON_API + "/app/pokemonData")
       .then((res) => {
         this.setState({
           isLoading: false,
