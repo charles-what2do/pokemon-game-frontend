@@ -1,26 +1,17 @@
 @import "./Button.css";
 
-.register {
-  display: inline-flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-
 button {
   font-size: 20px;
   padding: 10px;
   width: 200px;
 }
 
-.username + .password,
-.password + .repeat-password {
+.username + .password {
   margin-top: 10px;
 }
 
 .username,
-.password,
-.repeat-password {
+.password {
   margin-top: 0;
   margin-bottom: 10px;
 }

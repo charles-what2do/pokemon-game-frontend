@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-import axios from "axios";
+import { registeUser } from "../utils/Common";
 import "./Register.css";
-const baseURL = "http://localhost:3001/user";
 
 function Register(props) {
   const [loading, setLoading] = useState(false);
@@ -9,70 +8,138 @@ function Register(props) {
   const password = useFormInput("");
   const repeatPassword = useFormInput("");
   const [error, setError] = useState(null);
+  const [hasRegistered, setRegistered] = useState(false);
 
-  const handleRegister = () => {
+  const errHandler = (error) => {
+    setLoading(false);
+    setError(error);
+  };
+
+  const registerHandler = () => {
+    setLoading(false);
+    setRegistered(true);
+  };
+
+  const handleValidation = () => {
+    let formIsValid = true;
+    let errorMessage = "";
+
+    if (!username.value) {
+      formIsValid = false;
+      errorMessage = "Username cannot be empty";
+    }
+
+    if (typeof username.value !== "undefined") {
+      if (!username.value.match(/^[a-zA-Z0-9]+$/)) {
+        formIsValid = false;
+        errorMessage +=
+          (errorMessage !== "" ? "/n" : "") +
+          "Only alphanumeric string (no spaces) for username";
+      }
+    }
+
+    if (!password.value) {
+      formIsValid = false;
+      errorMessage +=
+        (errorMessage !== "" ? "/n" : "") + "Password cannot be empty";
+    }
+
+    if (!repeatPassword.value) {
+      formIsValid = false;
+      errorMessage +=
+        (errorMessage !== "" ? "/n" : "") + "Repeat password cannot be empty";
+    }
+
+    if (
+      typeof password.value !== "undefined" &&
+      typeof repeatPassword.value !== "undefined"
+    ) {
+      if (password.value !== repeatPassword.value) {
+        formIsValid = false;
+        errorMessage +=
+          (errorMessage !== "" ? "/n" : "") +
+          "Repeat password does not match password";
+      }
+    }
+
+    console.log(errorMessage);
+
+    setError(errorMessage);
+    return formIsValid;
+  };
+
+  const handleRegister = async () => {
     setError(null);
     setLoading(true);
-    if (password.value !== "" && password.value === repeatPassword.value) {
-      axios({
-        method: "post",
-        url: baseURL + "/register",
-        data: {
-          username: username.value,
-          password: password.value,
-        },
-      })
-        .then((response) => {
-          console.log(response);
-        })
-        .catch((error) => {
-          setLoading(false);
-          if (!!error.response) {
-            if (error.response.status === 401) {
-              setError(JSON.stringify(error.response.data));
-            } else {
-              setError("Something went wrong. Please try again later.");
-            }
-          } else {
-            setError("Something went wrong. Please try again later.");
-          }
-        });
+    if (handleValidation()) {
+      const user = { username: username.value, password: password.value };
+      await registeUser(user, registerHandler, errHandler);
     }
+    setLoading(false);
+  };
+
+  const gotoLogin = () => {
+    props.history.push("./login");
+  };
+
+  const showRegistration = () => {
+    return (
+      <div className="register-form">
+        <div className="username">
+          <h3>Username</h3>
+          <input type="text" {...username} />
+        </div>
+        <div className="password">
+          <h3>Password</h3>
+          <input type="password" {...password} />
+        </div>
+        <div className="repeat-password">
+          <h3>Repeat Password</h3>
+          <input type="password" {...repeatPassword} />
+        </div>
+        {error && (
+          <>
+            <small style={{ color: "red" }}>{error}</small>
+            <br />
+          </>
+        )}
+        <br />
+        <button
+          onClick={async () => {
+            await handleRegister();
+          }}
+          disabled={loading}
+        >
+          {loading ? "Registering..." : "Register"}
+        </button>
+        <br />
+      </div>
+    );
+  };
+
+  const showRegistrationSuccess = () => {
+    return (
+      <div className="register-success">
+        <div className="username">
+          <h3>{username.value} registered successfully</h3>
+        </div>
+        {error && (
+          <>
+            <small style={{ color: "red" }}>{error}</small>
+            <br />
+          </>
+        )}
+        <br />
+        <button onClick={gotoLogin}>Login</button>
+        <br />
+      </div>
+    );
   };
 
   return (
     <div className="register">
       <h1>Register</h1>
-      <br />
-      <div>
-        Username
-        <br />
-        <input type="text" {...username} />
-      </div>
-      <div style={{ marginTop: 10 }}>
-        Password
-        <br />
-        <input type="password" {...password} />
-      </div>
-      <div style={{ marginTop: 10 }}>
-        Repeat Password
-        <br />
-        <input type="password" {...repeatPassword} />
-      </div>
-      {error && (
-        <>
-          <small style={{ color: "red" }}>{error}</small>
-          <br />
-        </>
-      )}
-      <br />
-      <input
-        type="button"
-        value={loading ? "Registering..." : "Register"}
-        onClick={handleRegister}
-        disabled={loading}
-      />
-      <br />
+      {hasRegistered ? showRegistrationSuccess() : showRegistration()}
     </div>
   );
 }

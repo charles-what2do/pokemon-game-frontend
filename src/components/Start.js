@@ -1,24 +1,16 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import { getUsername } from "../utils/Common";
 import "./Start.css";
-const baseURL = "http://localhost:3001/user";
 
 function Start(props) {
   const [username, setUsername] = useState("");
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    axios({
-      method: "get",
-      url: baseURL + "/",
-      withCredentials: true,
-    })
-      .then((res) => {
-        setUsername(res.data.username);
-      })
-      .catch((error) => {
-        setError(JSON.stringify(error.response.data));
-      });
+    async function callGetUsername() {
+      await getUsername(setUsername, setError);
+    }
+    callGetUsername();
   }, []);
 
   const gotoRecords = () => {
@@ -29,29 +21,14 @@ function Start(props) {
     props.history.push("./game");
   };
 
+  const logoutHandler = () => {
+    props.setLoggedIn(false);
+    props.history.push("/login");
+  };
+
   const handleLogout = () => {
     setError(null);
-    axios({
-      method: "post",
-      url: baseURL + "/logout",
-    })
-      .then((response) => {
-        console.log(response);
-        setUsername("");
-        props.history.push("/login");
-      })
-      .catch((error) => {
-        if (!!error.response) {
-          if (error.response.status === 400) {
-            console.log(error.response.data);
-            setError(JSON.stringify(error.response.data));
-          } else {
-            setError("Something went wrong. Please try again later.");
-          }
-        } else {
-          setError("Something went wrong. Please try again later.");
-        }
-      });
+    props.logout(logoutHandler, setError);
   };
 
   return (

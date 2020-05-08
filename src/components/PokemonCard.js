@@ -2,7 +2,12 @@ import React from "react";
 import "./PokemonCard.css";
 import PokemonType from "./PokemonType";
 
-const PokemonCard = ({ pokemon, onBaseClick }) => {
+const PokemonCard = ({
+  pokemon,
+  onBaseClick = () => {},
+  attributeSelectable = false,
+  attributeSelected = -1,
+}) => {
   const { id, name, type, base } = pokemon;
   return (
     <div data-testid="pokemon" className="pokemon-card" z-index={id}>
@@ -25,8 +30,10 @@ const PokemonCard = ({ pokemon, onBaseClick }) => {
         {Object.keys(base).map((attribute) => (
           <span
             key={attribute}
-            className={`base-attribute base-` + attribute.toLowerCase()}
-            onClick={() => onBaseClick(attribute, base[attribute])}
+            className={`base-attribute base-${attribute.toLowerCase()}${
+              attributeSelectable ? " selectable" : ""
+            }${attribute === attributeSelected ? " selected" : ""}`}
+            onClick={() => onBaseClick(attribute)}
           >
             {attribute}: {base[attribute]}
           </span>

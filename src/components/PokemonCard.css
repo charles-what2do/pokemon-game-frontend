@@ -61,10 +61,6 @@
   background-color: white;
 }
 
-.pokemon-card-game .base-attribute:hover {
-  background-color: yellow;
-}
-
 .base-hp {
   grid-area: hp;
 }

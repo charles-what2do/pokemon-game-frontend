@@ -1,72 +1,74 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
-import "./Start.css";
-const baseURL = "http://localhost:3001/user";
+import "./Records.css";
+import { getRecords, rankingSufix } from "../utils/Common";
 
 function Records(props) {
   const [records, setRecords] = useState([]);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (records.length === 0) {
-      axios({
-        method: "get",
-        url: baseURL + "/records",
-        withCredentials: true,
-      })
-        .then((res) => {
-          console.log(res.data);
-          setRecords(res.data);
-        })
-        .catch((error) => {
-          setError(error);
-        });
+    async function getUserRecords() {
+      await getRecords(setRecords, setError);
     }
-  });
+    getUserRecords();
+  }, []);
 
   const gotoGame = () => {
     props.history.push("./game");
   };
 
+  const logoutHandler = () => {
+    props.setLoggedIn(false);
+    props.history.push("/login");
+  };
+
   const handleLogout = () => {
     setError(null);
-    axios({
-      method: "post",
-      url: baseURL + "/logout",
-    })
-      .then((response) => {
-        props.history.push("/login");
-      })
-      .catch((error) => {
-        if (!!error.response) {
-          if (error.response.status === 400) {
-            setError(JSON.stringify(error.response.data));
-          } else {
-            setError("Something went wrong. Please try again later.");
-          }
-        } else {
-          setError("Something went wrong. Please try again later.");
-        }
-      });
+    props.logout(logoutHandler, setError);
+  };
+
+  const showRecords = (recordType) => {
+    return (
+      <div className={`${recordType.toLowerCase()}-list`}>
+        <h2>{recordType + "S"}</h2>
+        <ul>
+          <span>
+            <b>Ranking</b>
+          </span>
+          <span>
+            <b>Time</b>
+          </span>
+        </ul>
+        {records
+          .sort(function (a, b) {
+            return a.recordTime - b.recordTime;
+          })
+          .filter((record) => record.recordType === recordType)
+          .map((record, index) => (
+            <ul key={record.id}>
+              <span>{rankingSufix(index)}</span>{" "}
+              <span>{record.recordTime}s</span>
+            </ul>
+          ))}
+      </div>
+    );
   };
 
   return (
-    <div className="start-menu">
+    <div>
       <h1>Your Records</h1>
-      <br />
-      {records
-        .sort(function (a, b) {
-          return a.recordTime - b.recordTime;
-        })
-        .map((record) => (
-          <h2 key={record.id}>
-            {record.recordType} {record.recordTime}s
-          </h2>
-        ))}
-      <button className="start-button" onClick={gotoGame}>
+      <div className="records">
+        {showRecords("WIN")}
+        {showRecords("LOSE")}
+      </div>
+      <button onClick={gotoGame}>
         <span>Back To Game </span>
       </button>
-      <button className="start-button" onClick={handleLogout}>
+      <button
+        onClick={() => {
+          handleLogout();
+        }}
+      >
         <span>Logout </span>
       </button>
       {error && (

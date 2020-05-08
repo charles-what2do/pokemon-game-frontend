@@ -5,35 +5,34 @@ import PokemonCard from "./PokemonCard";
 import { dealCards } from "../utils/shuffle";
 import "./PokemonCardGame.css";
 
-const pokemonURL = "https://us-central1-pokedex-23fb6.cloudfunctions.net";
-const baseURL = "http://localhost:3001/user";
-
 class PokemonCardGame extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       isLoading: true,
       headerMessage: "",
-      subMessage: "",
+      endMessage: "",
       playerName: "",
       player1Cards: [],
       player2Cards: [],
       startTime: null,
+      attribute: "",
+      showBothCards: false,
     };
   }
 
-  componentDidMount() {
-    this.getData();
+  async componentDidMount() {
+    await this.getData();
   }
 
-  getData() {
+  async getData() {
     this.setState({
       isLoading: true,
     });
 
     axios({
       method: "get",
-      url: baseURL + "/",
+      url: process.env.REACT_APP_BACKEND_API + "/",
       withCredentials: true,
     })
       .then((res) => {
@@ -47,7 +46,7 @@ class PokemonCardGame extends React.Component {
         // this.setState({ isLoading: false }); //, errorMessage: "Please Try Again" });
       });
 
-    axios(pokemonURL + "/app/pokemonData")
+    axios(process.env.REACT_APP_POKEMON_API + "/app/pokemonData")
       .then((res) => {
         const dealedCards = dealCards(res.data);
         this.setState({
@@ -71,7 +70,7 @@ class PokemonCardGame extends React.Component {
 
     axios({
       method: "post",
-      url: baseURL + "/records",
+      url: process.env.REACT_APP_BACKEND_API + "/records",
       data: record,
       withCredentials: true,
     })
@@ -81,7 +80,7 @@ class PokemonCardGame extends React.Component {
           headerMessage: `You ${
             record.recordType === "WIN" ? "won" : "lost"
           } the game`,
-          subMessage: `Record [${record.recordType} of ${record.recordTime}s] Saved`,
+          endMessage: `Record of [${record.recordTime}s] Saved`,
         });
       })
       .catch((error) => {
@@ -91,96 +90,184 @@ class PokemonCardGame extends React.Component {
       });
   }
 
-  gotoRecords = () => {
-    this.props.history.push("./records");
-  };
-
   gotoGame = () => {
     this.props.history.push("./game");
   };
 
-  handleLogout() {
-    // setError(null);
-    axios({
-      method: "post",
-      url: baseURL + "/logout",
-    })
-      .then((response) => {
-        this.props.history.push("/login");
-      })
-      .catch((error) => {
-        if (!!error.response) {
-          if (error.response.status === 400) {
-            console.log(error.response.data);
-            // setError(JSON.stringify(error.response.data));
-          } else {
-            // setError("Something went wrong. Please try again later.");
-          }
-        } else {
-          // setError("Something went wrong. Please try again later.");
-        }
-      });
-  }
+  gotoRecords = () => {
+    this.props.history.push("./records");
+  };
 
-  handleBaseClick = (attribute, value) => {
-    if (!this.state.isLoading) {
-      const [player1firstCard, ...player1Reamining] = this.state.player1Cards;
-      const [player2firstCard, ...player2Reamining] = this.state.player2Cards;
-      if (value > this.state.player1Cards[0].base[attribute]) {
-        // alert("You win");
-        this.setState({ headerMessage: "You win, your turn" });
-        if (player1Reamining.length === 0) {
-          // alert("You won the game");
-          const endTime = new Date();
-          const record = {
-            recordType: "WIN",
-            recordTime: Math.floor((endTime - this.state.startTime) / 1000),
-          };
-          this.saveRecord(record);
-        } else {
-          this.setState({
-            isLoading: false,
-            player2Cards: [
-              ...player2Reamining,
-              player1firstCard,
-              player2firstCard,
-            ],
-            player1Cards: [...player1Reamining],
-          });
-        }
+  logoutHandler = () => {
+    this.props.setLoggedIn(false);
+    this.props.history.push("/login");
+  };
+
+  handleLogout = () => {
+    this.props.logout(this.logoutHandler, null);
+  };
+
+  compareCards = (attribute) => {
+    const [player1firstCard, ...player1Reamining] = this.state.player1Cards;
+    const [player2firstCard, ...player2Reamining] = this.state.player2Cards;
+
+    // console.log(attribute);
+    // console.log("Player: " + player2firstCard.base[attribute]);
+    // console.log("Computer: " + player1firstCard.base[attribute]);
+
+    if (
+      this.state.player2Cards[0].base[attribute] >
+      this.state.player1Cards[0].base[attribute]
+    ) {
+      if (player1Reamining.length === 0) {
+        const endTime = new Date();
+        const record = {
+          recordType: "WIN",
+          recordTime: Math.floor((endTime - this.state.startTime) / 2000),
+        };
+        this.setState({
+          headerMessage: "You won the game",
+          showBothCards: true,
+        });
+        setTimeout(
+          function () {
+            this.saveRecord(record);
+          }.bind(this),
+          1000
+        );
       } else {
-        // alert("You lose");
-        this.setState({ headerMessage: "You lose, computer's turn" });
-        if (player2Reamining.length === 0) {
-          // alert("You lost the game");
-          const endTime = new Date();
-          const record = {
-            recordType: "LOSE",
-            recordTime: Math.floor((endTime - this.state.startTime) / 1000),
-          };
-          this.saveRecord(record);
-        } else {
+        this.setState({
+          headerMessage: "You win, your turn",
+          attribute: attribute,
+          showBothCards: true,
+        });
+        setTimeout(
+          function () {
+            this.setState({
+              isLoading: false,
+              player2Cards: [
+                ...player2Reamining,
+                player1firstCard,
+                player2firstCard,
+              ],
+              player1Cards: [...player1Reamining],
+              showBothCards: false,
+            });
+          }.bind(this),
+          2000
+        );
+      }
+    } else if (
+      this.state.player2Cards[0].base[attribute] <
+      this.state.player1Cards[0].base[attribute]
+    ) {
+      if (player2Reamining.length === 0) {
+        const endTime = new Date();
+        const record = {
+          recordType: "LOSE",
+          recordTime: Math.floor((endTime - this.state.startTime) / 1000),
+        };
+        this.setState({
+          headerMessage: "You lost the game",
+          showBothCards: true,
+        });
+        setTimeout(
+          function () {
+            this.saveRecord(record);
+          }.bind(this),
+          1000
+        );
+      } else {
+        this.setState({
+          headerMessage: "You lose, computer's turn",
+          attribute: attribute,
+          showBothCards: true,
+        });
+        setTimeout(
+          function () {
+            this.setState({
+              isLoading: false,
+              player2Cards: [...player2Reamining],
+              player1Cards: [
+                ...player1Reamining,
+                player2firstCard,
+                player1firstCard,
+              ],
+            });
+          }.bind(this),
+          2000
+        );
+        this.computerTurn();
+      }
+    } else {
+      this.setState({
+        headerMessage: "Tie, your turn",
+        showBothCards: true,
+      });
+
+      setTimeout(
+        function () {
           this.setState({
             isLoading: false,
-            player2Cards: [...player2Reamining],
-            player1Cards: [
-              ...player1Reamining,
-              player2firstCard,
-              player1firstCard,
-            ],
+            computerIndex: -1,
+            player2Cards: [...player2Reamining, player2firstCard],
+            player1Cards: [...player1Reamining, player1firstCard],
+            showBothCards: false,
           });
-        }
-      }
+        }.bind(this),
+        2000
+      );
     }
+  };
+
+  handleBaseClick = (attribute) => {
+    if (!this.state.isLoading) {
+      this.compareCards(attribute);
+    }
+  };
+
+  // playerTurn() {
+  //   setTimeout(
+  //     function () {
+  //       //Start the timer
+  //       this.setState({
+  //         showBothCards: false,
+  //       });
+  //     }.bind(this),
+  //     1000
+  //   );
+  // }
+
+  computerTurn = () => {
+    console.log("Computer turn");
+    const attributeIndex = Math.floor(Math.random() * 6);
+    const attribute = Object.keys(this.state.player1Cards[0].base)[
+      attributeIndex
+    ];
+
+    setTimeout(
+      function () {
+        this.setState({
+          headerMessage: `Computer selects ${attribute}`,
+          attribute: attribute,
+        });
+
+        setTimeout(
+          function () {
+            this.compareCards(attribute);
+          }.bind(this),
+          2000
+        );
+      }.bind(this),
+      1000
+    );
   };
 
   showEndGame() {
     return (
-      <div data-testid="pokemon-card-game" className="pokemon-card-game">
+      <div data-testid="end-card-game" className="end-card-game">
         <h2 className="message">{this.state.headerMessage}</h2>
-        <h3 className="sub-message">
-          Here is the sub message: {this.state.subMessage}
-        </h3>
+        <h3 className="end-message">{this.state.endMessage}</h3>
         <div className="end-menu">
           <button onClick={this.gotoGame}>
             <span>Retry Game </span>
@@ -196,30 +283,112 @@ class PokemonCardGame extends React.Component {
     );
   }
 
-  loadGame() {
+  showBothCards() {
     return (
       <div data-testid="pokemon-card-game" className="pokemon-card-game">
         <h2 className="message">{this.state.headerMessage}</h2>
         <div className="player player1">
-          <h1>Computer</h1>
+          <h1 className="player-name">Computer</h1>
           <PokemonCard
             key={this.state.player1Cards[0].id}
             pokemon={this.state.player1Cards[0]}
-            onBaseClick={this.handleBaseClick}
+            attributeSelected={this.state.attribute}
           />
-          <h3>Cards on hand: {this.state.player1Cards.length}</h3>
+          <h3 className="player-cards-count">
+            Cards on hand: {this.state.player1Cards.length}
+          </h3>
         </div>
         <div className="player player2">
-          <h1>{this.state.playerName}</h1>
+          <h1 className="player-name">{this.state.playerName}</h1>
+          <PokemonCard
+            key={this.state.player2Cards[0].id}
+            pokemon={this.state.player2Cards[0]}
+            attributeSelected={this.state.attribute}
+          />
+          <h3 className="player-cards-count">
+            Cards on hand: {this.state.player2Cards.length}
+          </h3>
+        </div>
+      </div>
+    );
+  }
+
+  showOnlyPlayerCard() {
+    return (
+      <div data-testid="pokemon-card-game" className="pokemon-card-game">
+        <h2 className="message">{this.state.headerMessage}</h2>
+        <div className="player player1">
+          <h1 className="player-name">Computer</h1>
+          <div
+            className="closed-card"
+            style={{
+              backgroundImage: `url(${
+                process.env.PUBLIC_URL + "pokemon-750.jpg"
+              })`,
+              backgroundPosition: "center",
+              backgroundRepeat: "repeat",
+              backgroundSize: "100%",
+            }}
+          />
+          <h3 className="player-cards-count">
+            Cards on hand: {this.state.player1Cards.length}
+          </h3>
+        </div>
+        <div className="player player2">
+          <h1 className="player-name">{this.state.playerName}</h1>
           <PokemonCard
             key={this.state.player2Cards[0].id}
             pokemon={this.state.player2Cards[0]}
             onBaseClick={this.handleBaseClick}
+            attributeSelectable={true}
           />
-          <h3>Cards on hand: {this.state.player2Cards.length}</h3>
+          <h3 className="player-cards-count">
+            Cards on hand: {this.state.player2Cards.length}
+          </h3>
         </div>
       </div>
     );
+  }
+
+  loadComputerTurn() {
+    return (
+      <div data-testid="pokemon-card-game" className="pokemon-card-game">
+        <h2 className="message">{this.state.headerMessage}</h2>
+        <div className="player player1">
+          <h1 className="player-name">Computer</h1>
+          <PokemonCard
+            key={this.state.player1Cards[0].id}
+            pokemon={this.state.player1Cards[0]}
+            attributeSelected={this.state.attribute}
+          />
+          <h3 className="player-cards-count">
+            Cards on hand: {this.state.player1Cards.length}
+          </h3>
+        </div>
+        <div className="player player2">
+          <h1 className="player-name">{this.state.playerName}</h1>
+          <PokemonCard
+            key={this.state.player2Cards[0].id}
+            pokemon={this.state.player2Cards[0]}
+          />
+          <h3 className="player-cards-count">
+            Cards on hand: {this.state.player2Cards.length}
+          </h3>
+        </div>
+      </div>
+    );
+  }
+
+  loadGame() {
+    if (this.state.showBothCards) {
+      return this.showBothCards();
+    } else {
+      // if (this.state.computerIndex === -1) {
+      return this.showOnlyPlayerCard();
+      // } else {
+      //   return this.loadComputerTurn();
+      // }
+    }
   }
 
   render() {
@@ -227,7 +396,7 @@ class PokemonCardGame extends React.Component {
       <div>
         {this.state.isLoading ? (
           <Loader />
-        ) : this.state.subMessage === "" ? (
+        ) : this.state.endMessage === "" ? (
           this.loadGame()
         ) : (
           this.showEndGame()

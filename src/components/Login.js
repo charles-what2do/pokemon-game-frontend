@@ -1,7 +1,5 @@
 import React, { useState } from "react";
-import axios from "axios";
-// import { setUserSession } from "./Utils/Common";
-const baseURL = "http://localhost:3001/user";
+import "./Login.css";
 
 function Login(props) {
   const [loading, setLoading] = useState(false);
@@ -9,35 +7,43 @@ function Login(props) {
   const password = useFormInput("");
   const [error, setError] = useState(null);
 
+  const loginHandler = () => {
+    props.setLoggedIn(true);
+    props.history.push("/start");
+  };
+
+  const errHandler = (error) => {
+    setError(error);
+    setLoading(false);
+  };
+
   const handleLogin = () => {
     setError(null);
     setLoading(true);
-    axios({
-      method: "post",
-      url: baseURL + "/login",
-      data: {
-        username: username.value,
-        password: password.value,
-      },
-      withCredentials: true,
-    })
-      .then((response) => {
-        setLoading(false);
-        props.history.push("/start");
-      })
-      .catch((error) => {
-        setLoading(false);
-        if (!!error.response) {
-          if (error.response.status === 400) {
-            console.log(error.response.data);
-            setError(JSON.stringify(error.response.data));
-          } else {
-            setError("Something went wrong. Please try again later.");
-          }
-        } else {
-          setError("Something went wrong. Please try again later.");
-        }
-      });
+    if (handleValidation()) {
+      const user = { username: username.value, password: password.value };
+      props.login(user, loginHandler, errHandler);
+    }
+    setLoading(false);
+  };
+
+  const handleValidation = () => {
+    let formIsValid = true;
+    let errorMessage = "";
+
+    if (!username.value) {
+      formIsValid = false;
+      errorMessage = "Username cannot be empty";
+    }
+
+    if (!password.value) {
+      formIsValid = false;
+      errorMessage +=
+        (errorMessage !== "" ? "/n" : "") + "Password cannot be empty";
+    }
+
+    setError(errorMessage);
+    return formIsValid;
   };
 
   const gotoRegister = () => {
@@ -47,15 +53,12 @@ function Login(props) {
   return (
     <div>
       <h1>Login</h1>
-      <br />
-      <div>
-        Username
-        <br />
+      <div className="username">
+        <h3>Username</h3>
         <input type="text" {...username} autoComplete="new-password" />
       </div>
-      <div style={{ marginTop: 10 }}>
-        Password
-        <br />
+      <div className="password">
+        <h3>Password</h3>
         <input type="password" {...password} autoComplete="new-password" />
       </div>
       {error && (
@@ -65,18 +68,12 @@ function Login(props) {
         </>
       )}
       <br />
-      <input
-        type="button"
-        value="Register"
-        onClick={gotoRegister}
-        disabled={loading}
-      />
-      <input
-        type="button"
-        value={loading ? "Loading..." : "Login"}
-        onClick={handleLogin}
-        disabled={loading}
-      />
+      <button onClick={gotoRegister} disabled={loading}>
+        Register
+      </button>
+      <button onClick={handleLogin} disabled={loading}>
+        {loading ? "Loading..." : "Login"}
+      </button>
       <br />
     </div>
   );
