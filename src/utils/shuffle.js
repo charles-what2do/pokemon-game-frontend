@@ -1,5 +1,3 @@
-const CARD_PER_PLAYER = 3;
-
 const shuffle = (cards) => {
   let currentIndex = cards.length;
 
@@ -20,9 +18,9 @@ const dealCards = (cards) => {
 
   const shuffledCards = shuffle(cards);
   const cardPerPlayer =
-    Math.floor(shuffledCards.length / 2) < CARD_PER_PLAYER
+    Math.floor(shuffledCards.length / 2) < process.env.REACT_APP_CARD_PER_PLAYER
       ? Math.floor(shuffledCards.length / 2)
-      : CARD_PER_PLAYER;
+      : process.env.REACT_APP_CARD_PER_PLAYER;
   for (let i = 0; i < cardPerPlayer * 2; i++) {
     const isOdd = i % 2 === 0;
     if (isOdd) {
